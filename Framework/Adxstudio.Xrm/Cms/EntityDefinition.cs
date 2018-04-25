@@ -240,14 +240,17 @@ namespace Adxstudio.Xrm.Cms
 				// No relationships to check, automatically include.
 				return true;
 			}
-
-			foreach (var relationship in this.Relationships)
-			{
-				var regardingEntity = entity.GetAttributeValue<EntityReference>(relationship.ForeignIdAttributeName);
-				if (string.Equals(regardingEntity?.LogicalName, relationship.ForeignEntityLogicalname))
+			/// Avoid an error if entity objecct is null - This result in the deletion of an annotation record
+			/// Allow it to fall through 
+			if (entity != null) {
+				foreach (var relationship in this.Relationships)
 				{
-					// Found matching relationship, include.
-					return true;
+					var regardingEntity = entity.GetAttributeValue<EntityReference>(relationship.ForeignIdAttributeName);
+					if (string.Equals(regardingEntity?.LogicalName, relationship.ForeignEntityLogicalname))
+					{
+						// Found matching relationship, include.
+						return true;
+					}
 				}
 			}
 
